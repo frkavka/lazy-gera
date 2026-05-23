@@ -1,0 +1,11 @@
+llm:
+  provider: gemini  # "gemini" | "anthropic"
+
+  model:
+    gemini: gemini-2.5-flash
+    anthropic: claude-haiku-4-5-20251001  # 将来対応予定
+
+  # バリデーション失敗時のリトライ設定
+  initial_temperature: 0.3   # 初回の温度
+  temperature_step: 0.1      # リトライのたびに引く値
+  max_retries: 3

@@ -1,0 +1,24 @@
+# APIキー・認証情報
+.env
+
+# ユーザー個人のルールブック（rulebook_example.yaml はテンプレートとしてgit管理）
+rulebook.yaml
+
+#Claude
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+
+# 出力ファイル
+*.txt
+!requirements.txt
+*.html
+
+# バックアップ・作業ファイル
+*_bak.py
+*.bak

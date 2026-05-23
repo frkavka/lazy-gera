@@ -1,0 +1,84 @@
+# ルールブック例
+# このファイルをコピーして rulebook.yaml として使ってください。
+
+# 1. 文脈依存ルビ（LLMが前後関係から読みを推論するリスト）
+context_dependent_rubys:
+  - word: "昨日"
+    readings:
+      - reading: "きのう"
+        condition: "会話文やカジュアルな表現の時"
+      - reading: "さくじつ"
+        condition: "記録、AIのセリフ、硬い表現の時"
+  - word: "明日"
+    readings:
+      - reading: "あした"
+        condition: "会話文やカジュアルな表現の時"
+      - reading: "あす"
+        condition: "概念的な話や硬い表現の時"
+  - word: "上手"
+    readings:
+      - reading: "かみて"
+        condition: "舞台や空間の位置・方向を表す時"
+      - reading: "じょうず"
+        condition: "技術や身のこなしが一般的に見て優れていることを表す時"
+      - reading: "うわて"
+        condition: "技術や身のこなしが、ふたりの比較において優れていることを表す時"
+  - word: "辛"
+    readings:
+      - reading: "から"
+        condition: "スパイシーな味を表すとき"
+      - reading: "つら"
+        condition: "苦しいとき"
+  - word: "人気"
+    readings:
+      - reading: "にんき"
+        condition: "人々からの支持が高い状態"
+      - reading: "ひとけ"
+        condition: "人の気配についての言及"
+
+# 2. 固定ルビ（常に同じ読み方を強制するリスト）
+#    first_time_only: true を付けると、作品内で初出の1回だけルビを振る
+fixed_rubys:
+  - word: "宇宙"
+    reading: "そら"
+    first_time_only: true   # 2回目以降は「宇宙」のままにする
+  - word: "深淵"
+    reading: "アビス"
+
+# 3. 書式・フォーマット指定
+format_rules:
+  - target_word: "帝国"
+    action: "bold"
+
+# 4. 自動ルビ設定（難読漢字を自動検出してルビ候補をLLMに提示）
+auto_ruby:
+  enabled: true
+  threshold: "joyo"        # "jis_1"（JIS第1水準外）| "joyo"（常用漢字外）| "kyoiku"（教育漢字外・より積極的）
+  # kyoiku_grade: 3        # threshold が "kyoiku" のとき有効。指定学年以下のみ「読める」扱い（1〜6、省略時は6=全学年）
+  extra_kanji: ""          # threshold に関わらず「読める」扱いにする漢字を追加（例: "俺彼奴誰"）
+  first_time_only: false   # true にすると自動検出ルビも初出のみ
+
+# 5. 作者マークアップ記号の定義
+#    原稿執筆時に使っている記号をここで宣言する。
+#    出力時にプラットフォームごとの形式（青空文庫・KDP など）へ自動変換される。
+#
+#    デフォルト値（このセクション自体を省略した場合も同じ記号が使われる）:
+#      bold:     open: "【"  close: "】"
+#      emphasis: open: "〔"  close: "〕"
+#
+#    変更例:
+#      open と close を同じ記号にすると「※text※」のような書き方もできる
+#      ただし ** ^^ { } | === --- は内部処理と競合するため使用不可
+#
+markup:
+  bold:            # 太字
+    open: "【"
+    close: "】"
+  emphasis:        # 傍点
+    open: "〔"
+    close: "〕"
+
+# 6. 安全設定（絶対改変禁止の念押し）
+safety_settings:
+  block_word_changes: true
+  preserve_punctuation: true
