@@ -151,6 +151,14 @@ def _deduplicate_rubies(results: list[ChunkResult], rulebook: dict) -> list[Chun
 
     _RUBY_PAT = re.compile(r'\{([^|{}]+)\|[^}]+\}')
 
+    # 手動ルールのパターンは全チャンク共通なので事前コンパイル
+    precompiled: dict[str, re.Pattern] = {
+        w: re.compile(r'\{' + re.escape(w) + r'\|[^}]+\}')
+        for w in first_time_words
+    }
+    # auto_ruby で動的に発見した語のキャッシュ（同じ語を何度もコンパイルしない）
+    pat_cache: dict[str, re.Pattern] = {}
+
     seen: set[str] = set()
     new_results: list[ChunkResult] = []
 
@@ -168,7 +176,13 @@ def _deduplicate_rubies(results: list[ChunkResult], rulebook: dict) -> list[Chun
             target_words |= auto_words
 
         for word in target_words:
-            pat = re.compile(r'\{' + re.escape(word) + r'\|[^}]+\}')
+            if word in precompiled:
+                pat = precompiled[word]
+            elif word in pat_cache:
+                pat = pat_cache[word]
+            else:
+                pat = re.compile(r'\{' + re.escape(word) + r'\|[^}]+\}')
+                pat_cache[word] = pat
             matches = list(pat.finditer(text))
             if not matches:
                 continue
