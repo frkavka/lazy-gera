@@ -1,7 +1,15 @@
-# 自動フォーマッター
+# lazy-gera（自動ルビ振り）
 
-小説テキストにルビ・強調などの書式を付与し、複数の投稿プラットフォーム向けファイルを一括生成するツールです。  
-AI（Google Gemini）が書式付けを行いますが、**原文の文字は一切変更しない**ことをプログラムが保証します。
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-red.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-yellow?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/ashoe)
+
+
+テキストにルビ・強調などの書式を付与し、複数の投稿プラットフォーム向けに使える形で入手できるツールです。<br />
+AIが書式付けを行いますが、**原文の文字は一切変更しない**ことをプログラムが保証します。
+
+デモは作者noteをご覧ください：<br />
+`https://note.com/cozy_nerine1904/n/n045da1e0fce3`<br />
+`https://note.com/cozy_nerine1904/n/na76838f40263`
 
 ---
 
@@ -54,28 +62,12 @@ AI（Google Gemini）が書式付けを行いますが、**原文の文字は一
 
 ## セットアップ
 
-### リポジトリの取得
-
-サブモジュール（漢字データ）を含むため、クローン時に `--recurse-submodules` を付けてください。
-
-```bash
-git clone --recurse-submodules <リポジトリURL>
-```
-
-すでに `git clone` してしまった場合は、後からサブモジュールを初期化できます。
-
-```bash
-git submodule update --init
-```
-
-### 依存パッケージのインストール
-
+1. 必要なライブラリをインストール
 ```bash
 pip install -r requirements.txt
 ```
 
-### API キーの設定
-
+2. ご自身のGeminiAPIキーを設定
 `.env` ファイルを作成して Gemini API キーを設定します。
 
 ```
@@ -89,6 +81,9 @@ GEMINI_API_KEY=your_api_key_here
 ```bash
 python main.py <原文ファイル> [--targets プラットフォーム...] [--rulebook ルールブック.yaml]
 ```
+
+> [!WARNING] 
+>.txt、.mdなどテキストであれば問題ありませんが、Wordファイルなどのバイナリファイルはサポートしていません。
 
 ### 例
 
@@ -105,6 +100,9 @@ python main.py novel.txt --targets kdp --rulebook my_rulebook.yaml
 
 出力ファイルは入力ファイルと同じディレクトリに `{元ファイル名}_{プラットフォーム}.txt` として生成されます。  
 （例: `novel_aozora.txt`, `novel_kdp.txt`）
+
+また、指定に関わらず「原文ファイル名.viewer.html」という名前の HTML ファイルが生成されます。
+これをブラウザで開くと、原文とルビ振り結果が確認・修正できるのでご利用ください。
 
 ### ルールブックの検索順
 
@@ -128,11 +126,11 @@ context_dependent_rubys:
       - reading: "さくじつ"
         condition: "記録、AIのセリフ、硬い表現の時"
 
-# 固定ルビ：常に同じ読みを強制
+# 固定ルビ：常に同じ読みを強制（こちらの方が自動ルビより優先される）
 fixed_rubys:
   - word: "宇宙"
     reading: "そら"
-    first_time_only: true   # 初出のみルビを振る
+    first_time_only: true   # true=初出のみルビを振る
 
 # 書式指定
 format_rules:
@@ -142,9 +140,12 @@ format_rules:
 # 自動ルビ：難読漢字を自動検出
 auto_ruby:
   enabled: true
-  threshold: "joyo"       # "joyo"（常用漢字外）| "kyoiku"（教育漢字外・より積極的）
-  first_time_only: false
+  threshold: "joyo"       # "jis_1"（JIS第1水準漢字外）| "joyo"（常用漢字外）| "kyoiku"（教育漢字外・より積極的）
+  kyoiku_grade: 3         # 教育漢字の時のみ有効で、レベル設定が可能。小学校<入力した学年>生よりも上で習う漢字にルビを振るとお考えください
+  first_time_only: false  # false=常にルビを振る
 ```
+> [!TIP]
+> fixed_rubys設定は、人名やファンタジー用語などに使うと便利だと思います
 
 ---
 

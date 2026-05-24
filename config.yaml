@@ -3,7 +3,7 @@ llm:
 
   model:
     gemini: gemini-2.5-flash
-    anthropic: claude-haiku-4-5-20251001  # 将来対応予定
+    anthropic: claude-haiku-4-5-20251001  # 将来対応するかもしれない
 
   # バリデーション失敗時のリトライ設定
   initial_temperature: 0.3   # 初回の温度
