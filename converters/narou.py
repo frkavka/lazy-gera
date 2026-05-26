@@ -12,8 +12,8 @@ def convert_to_narou(text: str) -> str:
     """内部フォーマット → 小説家になろう形式（グループ③）"""
     # ルビ: {宇宙|そら} → |宇宙《そら》（半角パイプ）
     text = re.sub(r'\{([^|{}]+)\|([^}]+)\}', r'|\1《\2》', text)
-    # 太字（**text** はそのまま）
-    # 傍点 → 1文字ずつドットルビで代替
+    # 太字・傍点 → 1文字ずつドットルビで代替（なろうに太字記法なし）
+    text = re.sub(r'\*\*(.+?)\*\*', lambda m: ''.join(f'｜{ch}《・》' for ch in m.group(1)), text)
     text = _emphasis_to_narou(text)
     # 章区切り（区切り線）
     text = text.replace('===', '――――――――――')
